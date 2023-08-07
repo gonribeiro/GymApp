@@ -8,11 +8,17 @@ class AuthenticationService {
     required String password,
     required String name,
   }) async {
-    UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password
-    );
-
-    await userCredential.user!.updateDisplayName(name);
+    try {
+      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password
+      );
+      
+      await userCredential.user!.updateDisplayName(name);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "email-already-in-use") {
+        print("E-mail já cadastrado");
+      }
+    }
   }
 }
